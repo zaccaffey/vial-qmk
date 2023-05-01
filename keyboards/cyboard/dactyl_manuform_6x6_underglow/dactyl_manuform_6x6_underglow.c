@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-#include "dactyl.h"
+#include "dactyl_manuform_6x6_underglow.h"
 
 #ifdef RGB_MATRIX_ENABLE
 led_config_t g_led_config = { {
