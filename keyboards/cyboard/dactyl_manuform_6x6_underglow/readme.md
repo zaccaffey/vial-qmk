@@ -1,4 +1,4 @@
-#Cyboard Dactyls
+#Cyboard Dactyl Manuform 6x6 with 22 underglow LEDs on each half.
 
 * Keyboard Maintainer: [Cyboard](https://github.com/Cyboard-DigitalTailor)
 * Hardware Supported: Cyboard Dactyls
@@ -8,10 +8,8 @@ See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_to
 
 ## Building Firmware
 
-Various sizes and thumb-cluster styles are supported as keymaps. To build the firmware, use the command:
-`qmk compile -kb cyboard/dactyl -km {THUMB STYLE}_{ROWS}`
-where `{THUMB STYLE}` can be `manuform`, `dualarcs`, or `singlearc`
-and `{ROWS}` can be `function_row`, `number_row`, or `letters_only`
+To build the firmware, use the command:
+`qmk compile -kb cyboard/dactyl_manuform_6x6_underglow -km manuform_function_row`
 
 ## Flashing
 

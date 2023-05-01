@@ -19,8 +19,8 @@
 
 /* RGB settings */
 #define RGB_DI_PIN GP1
-#define RGBLED_NUM 80
-#define RGBLED_SPLIT { 40, 40 }
+#define RGBLED_NUM 124
+#define RGBLED_SPLIT { 62, 62 }
 #ifdef RGB_MATRIX_ENABLE
 #    define SPLIT_TRANSPORT_MIRROR
 #    define DRIVER_LED_TOTAL RGBLED_NUM
