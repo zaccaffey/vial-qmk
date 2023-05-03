@@ -9,9 +9,11 @@ See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_to
 ## Building Firmware
 
 Various sizes and thumb-cluster styles are supported as keymaps. To build the firmware, use the command:
-`qmk compile -kb cyboard/dactyl -km {THUMB STYLE}_{ROWS}`
-where `{THUMB STYLE}` can be `manuform`, `dualarcs`, or `singlearc`
-and `{ROWS}` can be `function_row`, `number_row`, or `letters_only`
+`qmk compile -kb cyboard/dactyl -km {THUMB STYLE}_{ROWS}{_MOD}`
+where
+  `{THUMB STYLE}` can be `manuform`, `dualarcs`, `singlearc`, or `dualarcs_high`
+  `{ROWS}` can be `function_row`, `number_row`, or `letters_only`
+  `{_MOD}` can be `_noextrapinkykeys` or omitted (only for some made-to-measure and custom requests)
 
 ## Flashing
 
