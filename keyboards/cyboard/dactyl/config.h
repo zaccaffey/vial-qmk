@@ -15,6 +15,7 @@
 
 /* Split keyboard settings */
 #define SOFT_SERIAL_PIN GP0
+#define SELECT_SOFT_SERIAL_SPEED 2
 #define MASTER_LEFT
 
 /* RGB settings */
