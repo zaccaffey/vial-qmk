@@ -15,7 +15,7 @@
 
 /* Split keyboard settings */
 #define SOFT_SERIAL_PIN GP28
-#define MASTER_LEFT
+#define SPLIT_HAND_PIN GP0
 
 /* RGB settings */
 #define RGB_DI_PIN GP15
