@@ -9,16 +9,16 @@
 /* Key matrix definitions */
 #define MATRIX_ROWS 14
 #define MATRIX_COLS 7
-#define MATRIX_ROW_PINS { GP8, GP7, GP28, GP6, GP23, GP27, GP21 }
-#define MATRIX_COL_PINS { GP9, GP26, GP22, GP20, GP29, GP4, GP5 }
+#define MATRIX_ROW_PINS { GP2, GP3, GP8, GP4, GP13, GP9, GP14 }
+#define MATRIX_COL_PINS { GP1, GP10, GP11, GP12, GP7, GP6, GP5 }
 #define DIODE_DIRECTION ROW2COL
 
 /* Split keyboard settings */
-#define SOFT_SERIAL_PIN GP0
-#define MASTER_LEFT
+#define SOFT_SERIAL_PIN GP28
+#define SPLIT_HAND_PIN GP0
 
 /* RGB settings */
-#define RGB_DI_PIN GP1
+#define RGB_DI_PIN GP15
 #define RGBLED_NUM 80
 #define RGBLED_SPLIT { 40, 40 }
 #ifdef RGB_MATRIX_ENABLE
@@ -97,4 +97,4 @@
 // https://github.com/qmk/qmk_firmware/issues/8990#issuecomment-851055637
 #undef SPLIT_USB_DETECT
 //https://www.reddit.com/r/ErgoMechKeyboards/comments/11qevf9/comment/jc5y8ux/?context=3
-#define USB_VBUS_PIN GP19
+#define USB_VBUS_PIN GP27
