@@ -1,7 +1,7 @@
-#Cyboard Dactyls
+# Cyboard Dactyls
 
 * Keyboard Maintainer: [Cyboard](https://github.com/Cyboard-DigitalTailor)
-* Hardware Supported: Cyboard Dactyls
+* Hardware Supported: Cyboard Dactyls with USB Type C Split Interconnect
 * Hardware Availability: [cyboard.digital](https://www.cyboard.digital/product-page/Dactyl-Manuform)
 
 See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_tools) and the [make instructions](https://docs.qmk.fm/#/getting_started_make_guide) for more information. Brand new to QMK? Start with our [Complete Newbs Guide](https://docs.qmk.fm/#/newbs).
@@ -9,15 +9,14 @@ See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_to
 ## Building Firmware
 
 Various sizes and thumb-cluster styles are supported as keymaps. To build the firmware, use the command:
-`qmk compile -kb cyboard/dactyl -km {THUMB STYLE}_{ROWS}{_MOD}`
-where
-  `{THUMB STYLE}` can be `manuform`, `dualarcs`, `singlearc`, or `dualarcs_high`
-  `{ROWS}` can be `function_row`, `number_row`, or `letters_only`
-  `{_MOD}` can be `_noextrapinkykeys` or omitted (only for some made-to-measure and custom requests)
+`qmk compile -kb cyboard/dactyl -km {THUMB STYLE}_{ROWS}`
+where `{THUMB STYLE}` can be `manuform`, `dual_arcs`, or `single_arc`
+and `{ROWS}` can be `function_row`, `number_row`, or `letters_only`
 
 ## Flashing
 
 To flash the firmware to your Cyboard,
-1. Enter the bootloader by double-tapping the reset button on the back of the board, next to the USB port.
+1. Enter the bootloader by double-tapping the reset button on the back of the board.
 2. A USB device called `RPI-RP2` should appear on your computer.
-3. Drag the `.uf2` firmware file into `RPI-RP2`.  `RPI-RP2` should now disappear, and your Cyboard is ready to use with your new firmware!
+3. Drag the `.uf2` firmware file into `RPI-RP2`.  `RPI-RP2` should now disappear.
+4. Repeat steps 1-3 on the other half.  Your Cyboard is ready to use with your new firmware!
