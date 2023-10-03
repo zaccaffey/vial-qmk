@@ -28,7 +28,7 @@
         "driver": "vendor"
     },
     "rgb_matrix": {
-        "driver": "WS2812",
+        "driver": "ws2812",
         "max_brightness": 120,
         "animations": {
             "alpha_mods": true,
