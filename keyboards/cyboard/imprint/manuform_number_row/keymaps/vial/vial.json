@@ -1,5 +1,5 @@
 {
-    "name": "Dactyl",
+    "name": "Imprint Manuform",
     "vendorId": "0xFEED",
     "productId": "0x0000",
     "lighting": "vialrgb",
@@ -79,17 +79,13 @@
     "9,5"
   ],
   [
-    "1,5",
-    "1,4",
     "1,3",
     "1,2",
     {
       "x": 9.5
     },
     "8,2",
-    "8,3",
-    "8,4",
-    "8,5"
+    "8,3"
   ],
   [
     {
