@@ -10,7 +10,7 @@ See the [build environment setup](https://docs.qmk.fm/#/getting_started_build_to
 
 Various sizes and thumb-cluster styles are supported as keymaps. To build the firmware, use the command:
 `make cyboard/{MODEL}/{THUMB STYLE}_{ROWS}:vial`
-where `{MODEL}` can be `imprint` or `manuform`
+where `{MODEL}` can be `imprint` or `dactyl`
 , `{THUMB STYLE}` can be `imprint`, `manuform`, `dual_arcs`, or `single_arc`
 , and `{ROWS}` can be `function_row`, `number_row`, or `letters_only`
 
