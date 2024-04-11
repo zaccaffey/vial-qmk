@@ -3,6 +3,40 @@
     "vendorId": "0xFEED",
     "productId": "0x0000",
     "lighting": "vialrgb",
+    "customKeycodes": [
+        {"name": "DPI_INC",
+         "title": "Increase trackball sensitivity",
+         "shortName": "POINTER_DEFAULT_DPI_FORWARD"
+        },
+        {"name": "DPI_DEC",
+         "title": "Decrease trackball sensitivity",
+         "shortName": "POINTER_DEFAULT_DPI_REVERSE"
+        },
+        {"name": "SNP_INC",
+         "title": "Increase trackball sensitivity when in sniping mode",
+         "shortName": "POINTER_SNIPING_DPI_FORWARD"
+        },
+        {"name": "SNP_DEC",
+         "title": "Decrease trackball sensitivity when in sniping mode",
+         "shortName": "POINTER_SNIPING_DPI_REVERSE"
+        },
+        {"name": "Snipe",
+         "title": "Reduce trackball sensitivity while held",
+         "shortName": "SNIPING_MODE"
+        },
+        {"name": "SNP_TOG",
+         "title": "Toggle between normal and sniping mode",
+         "shortName": "SNIPING_MODE_TOGGLE"
+        },
+        {"name": "DragScroll",
+         "title": "Make trackball behave as a scroll wheel while held",
+         "shortName": "DRAGSCROLL_MODE"
+        },
+        {"name": "DragScroll_TOG",
+         "title": "Toggle between normal and drag scroll mode",
+         "shortName": "DRAGSCROLL_MODE_TOGGLE"
+        }
+    ],
     "matrix": {
         "rows": 14,
         "cols": 8

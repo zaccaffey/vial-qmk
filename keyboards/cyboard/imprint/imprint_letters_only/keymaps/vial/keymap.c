@@ -3,6 +3,7 @@
  */
 
 #include QMK_KEYBOARD_H
+#include <cyboard.h>
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
