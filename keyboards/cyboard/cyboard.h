@@ -20,7 +20,7 @@
 
 #include "quantum.h"
 
-#ifdef POINTING_DEVICE_ENABLE
+#ifdef SPLIT_POINTING_ENABLE
 #    ifndef NO_CHARYBDIS_KEYCODES
 enum charybdis_keycodes {
     POINTER_DEFAULT_DPI_FORWARD = QK_KB_0,
@@ -108,4 +108,4 @@ bool charybdis_get_pointer_dragscroll_enabled(void);
  * are translated into horizontal and vertical scroll movements.
  */
 void charybdis_set_pointer_dragscroll_enabled(bool enable);
-#endif // POINTING_DEVICE_ENABLE
+#endif // SPLIT_POINTING_ENABLE
