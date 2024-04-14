@@ -134,9 +134,11 @@ static void step_pointer_default_dpi(charybdis_config_t* config, bool forward, b
  * Increases the DPI value if `forward` is `true`, decreases it otherwise.
  * The increment/decrement steps are equal to CHARYBDIS_SNIPING_DPI_CONFIG_STEP.
  */
-static void step_pointer_sniping_dpi(charybdis_config_t* config, bool forward) {
+static void step_pointer_sniping_dpi(charybdis_config_t* config, bool forward, bool is_left) {
     config->pointer_sniping_dpi += forward ? 1 : -1;
-    maybe_update_pointing_device_cpi(config, true);
+
+    // Pass the side information to the CPI update function.
+    maybe_update_pointing_device_cpi(config, is_left);
 }
 
 uint16_t charybdis_get_pointer_default_dpi(void) {
@@ -164,31 +166,47 @@ void charybdis_cycle_pointer_default_dpi(bool forward, bool is_left) {
 
 
 
-void charybdis_cycle_pointer_sniping_dpi_noeeprom(bool forward) {
-    step_pointer_sniping_dpi(&g_charybdis_config, forward);
+// void charybdis_cycle_pointer_sniping_dpi_noeeprom(bool forward) {
+//     step_pointer_sniping_dpi(&g_charybdis_config, forward);
+// }
+
+void charybdis_cycle_pointer_sniping_dpi(bool forward, bool is_left) {
+    // Select the correct configuration based on 'is_left'
+    charybdis_config_t* config = is_left ? &g_charybdis_config_left : &g_charybdis_config_right;
+
+    // Pass the correct configuration and the 'is_left' flag
+    step_pointer_sniping_dpi(config, forward, is_left);
+
+    // Write the updated configuration to EEPROM
+    write_charybdis_config_to_eeprom(config);
 }
 
-void charybdis_cycle_pointer_sniping_dpi(bool forward) {
-    step_pointer_sniping_dpi(&g_charybdis_config, forward);
-    write_charybdis_config_to_eeprom(&g_charybdis_config);
+bool charybdis_get_pointer_sniping_enabled(bool is_left) {
+    charybdis_config_t* config = is_left ? &g_charybdis_config_left : &g_charybdis_config_right;
+    return config->is_sniping_enabled;
 }
 
-bool charybdis_get_pointer_sniping_enabled(void) {
-    return g_charybdis_config.is_sniping_enabled;
+void charybdis_set_pointer_sniping_enabled(bool enable, bool is_left) {
+    // Select the correct configuration based on 'is_left'
+    charybdis_config_t* config = is_left ? &g_charybdis_config_left : &g_charybdis_config_right;
+
+    // Update the sniping enabled state for the specified side
+    config->is_sniping_enabled = enable;
+
+    // Apply the updated configuration
+    maybe_update_pointing_device_cpi(config, is_left);
 }
 
-void charybdis_set_pointer_sniping_enabled(bool enable) {
-    g_charybdis_config.is_sniping_enabled = enable;
-    maybe_update_pointing_device_cpi(&g_charybdis_config, true);
+
+bool charybdis_get_pointer_dragscroll_enabled(bool is_left) {
+    charybdis_config_t* config = is_left ? &g_charybdis_config_left : &g_charybdis_config_right;
+    return config->is_dragscroll_enabled;
 }
 
-bool charybdis_get_pointer_dragscroll_enabled(void) {
-    return g_charybdis_config.is_dragscroll_enabled;
-}
-
-void charybdis_set_pointer_dragscroll_enabled(bool enable) {
-    g_charybdis_config.is_dragscroll_enabled = enable;
-    maybe_update_pointing_device_cpi(&g_charybdis_config, true);
+void charybdis_set_pointer_dragscroll_enabled(bool enable, bool is_left) {
+    charybdis_config_t* config = is_left ? &g_charybdis_config_left : &g_charybdis_config_right;
+    config->is_dragscroll_enabled = enable;
+    maybe_update_pointing_device_cpi(config, is_left);
 }
 
 /**
@@ -296,32 +314,60 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
                 charybdis_cycle_pointer_default_dpi(has_shift_mod(), false);
             }
             break;
-        case POINTER_SNIPING_DPI_FORWARD:
+        case LEFT_POINTER_SNIPING_DPI_FORWARD:
             if (record->event.pressed) {
                 // Step backward if shifted, forward otherwise.
-                charybdis_cycle_pointer_sniping_dpi(/* forward= */ !has_shift_mod());
+                charybdis_cycle_pointer_sniping_dpi(/* forward= */ !has_shift_mod(), true);
             }
             break;
-        case POINTER_SNIPING_DPI_REVERSE:
+        case RIGHT_POINTER_SNIPING_DPI_FORWARD:
+            if (record->event.pressed) {
+                // Step backward if shifted, forward otherwise.
+                charybdis_cycle_pointer_sniping_dpi(/* forward= */ !has_shift_mod(), false);
+            }
+            break;
+        case LEFT_POINTER_SNIPING_DPI_REVERSE:
             if (record->event.pressed) {
                 // Step forward if shifted, backward otherwise.
-                charybdis_cycle_pointer_sniping_dpi(/* forward= */ has_shift_mod());
+                charybdis_cycle_pointer_sniping_dpi(/* forward= */ has_shift_mod(), true);
             }
             break;
-        case SNIPING_MODE:
-            charybdis_set_pointer_sniping_enabled(record->event.pressed);
-            break;
-        case SNIPING_MODE_TOGGLE:
+        case RIGHT_POINTER_SNIPING_DPI_REVERSE:
             if (record->event.pressed) {
-                charybdis_set_pointer_sniping_enabled(!charybdis_get_pointer_sniping_enabled());
+                // Step forward if shifted, backward otherwise.
+                charybdis_cycle_pointer_sniping_dpi(/* forward= */ has_shift_mod(), false);
             }
             break;
-        case DRAGSCROLL_MODE:
-            charybdis_set_pointer_dragscroll_enabled(record->event.pressed);
+        case LEFT_SNIPING_MODE:
+            charybdis_set_pointer_sniping_enabled(record->event.pressed, true);
             break;
-        case DRAGSCROLL_MODE_TOGGLE:
+        case RIGHT_SNIPING_MODE:
+            charybdis_set_pointer_sniping_enabled(record->event.pressed, false);
+            break;
+        case LEFT_SNIPING_MODE_TOGGLE:
             if (record->event.pressed) {
-                charybdis_set_pointer_dragscroll_enabled(!charybdis_get_pointer_dragscroll_enabled());
+                charybdis_set_pointer_sniping_enabled(!charybdis_get_pointer_sniping_enabled(true), true);
+            }
+            break;
+        case RIGHT_SNIPING_MODE_TOGGLE:
+            if (record->event.pressed) {
+                charybdis_set_pointer_sniping_enabled(!charybdis_get_pointer_sniping_enabled(false), false);
+            }
+            break;
+        case LEFT_DRAGSCROLL_MODE:
+            charybdis_set_pointer_dragscroll_enabled(record->event.pressed, true);
+            break;
+        case RIGHT_DRAGSCROLL_MODE:
+            charybdis_set_pointer_dragscroll_enabled(record->event.pressed, false);
+            break;
+        case LEFT_DRAGSCROLL_MODE_TOGGLE:
+            if (record->event.pressed) {
+                charybdis_set_pointer_dragscroll_enabled(!charybdis_get_pointer_dragscroll_enabled(true), true);
+            }
+            break;
+        case RIGHT_DRAGSCROLL_MODE_TOGGLE:
+            if (record->event.pressed) {
+                charybdis_set_pointer_dragscroll_enabled(!charybdis_get_pointer_dragscroll_enabled(false), false);
             }
             break;
     }
