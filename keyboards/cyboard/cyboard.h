@@ -23,16 +23,20 @@
 #ifdef SPLIT_POINTING_ENABLE
 #    ifndef NO_CHARYBDIS_KEYCODES
 enum charybdis_keycodes {
-    POINTER_DEFAULT_DPI_FORWARD = QK_KB_0,
-    POINTER_DEFAULT_DPI_REVERSE,
+    LEFT_POINTER_DEFAULT_DPI_FORWARD = QK_KB_0,
+    LEFT_POINTER_DEFAULT_DPI_REVERSE,
     POINTER_SNIPING_DPI_FORWARD,
     POINTER_SNIPING_DPI_REVERSE,
     SNIPING_MODE,
     SNIPING_MODE_TOGGLE,
     DRAGSCROLL_MODE,
     DRAGSCROLL_MODE_TOGGLE,
+    RIGHT_POINTER_DEFAULT_DPI_FORWARD,
+    RIGHT_POINTER_DEFAULT_DPI_REVERSE,
 };
 
+
+//TODO: change these for left and right
 #        define DPI_MOD POINTER_DEFAULT_DPI_FORWARD
 #        define DPI_RMOD POINTER_DEFAULT_DPI_REVERSE
 #        define S_D_MOD POINTER_SNIPING_DPI_FORWARD
@@ -54,7 +58,7 @@ uint16_t charybdis_get_pointer_default_dpi(void);
  *
  * The new value is persisted in EEPROM.
  */
-void charybdis_cycle_pointer_default_dpi(bool forward);
+void charybdis_cycle_pointer_default_dpi(bool forward, bool is_left);
 
 /**
  * \brief Same as `charybdis_cycle_pointer_default_dpi`, but do not write to
@@ -63,7 +67,7 @@ void charybdis_cycle_pointer_default_dpi(bool forward);
  * This means that reseting the board will revert the value to the last
  * persisted one.
  */
-void charybdis_cycle_pointer_default_dpi_noeeprom(bool forward);
+//void charybdis_cycle_pointer_default_dpi_noeeprom(bool forward);
 
 /** \brief Return the current DPI value for the pointer's sniper-mode. */
 uint16_t charybdis_get_pointer_sniping_dpi(void);
