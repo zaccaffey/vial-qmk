@@ -4,13 +4,13 @@
     "productId": "0x0000",
     "lighting": "vialrgb",
     "customKeycodes": [
-        {"name": "L_DPI_INC",
-         "title": "Increase trackball sensitivity on the left hand",
-         "shortName": "LEFT_POINTER_DEFAULT_DPI_FORWARD"
+        {"name": "DPI_INC",
+         "title": "Increase trackball sensitivity",
+         "shortName": "POINTER_DEFAULT_DPI_FORWARD"
         },
-        {"name": "L_DPI_DEC",
-         "title": "Decrease trackball sensitivity on the left hand",
-         "shortName": "LEFT_POINTER_DEFAULT_DPI_REVERSE"
+        {"name": "DPI_DEC",
+         "title": "Decrease trackball sensitivity",
+         "shortName": "POINTER_DEFAULT_DPI_REVERSE"
         },
         {"name": "SNP_INC",
          "title": "Increase trackball sensitivity when in sniping mode",
@@ -35,14 +35,6 @@
         {"name": "DragScroll_TOG",
          "title": "Toggle between normal and drag scroll mode",
          "shortName": "DRAGSCROLL_MODE_TOGGLE"
-        },
-        {"name": "R_DPI_INC",
-         "title": "Increase trackball sensitivity on right hand",
-         "shortName": "RIGHT_POINTER_DEFAULT_DPI_FORWARD"
-        },
-        {"name": "R_DPI_DEC",
-         "title": "Decrease trackball sensitivity on right hand",
-         "shortName": "RIGHT_POINTER_DEFAULT_DPI_REVERSE"
         }
     ],
     "matrix": {

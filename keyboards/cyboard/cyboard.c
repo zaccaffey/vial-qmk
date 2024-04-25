@@ -62,9 +62,6 @@ typedef union {
 } charybdis_config_t;
 
 static charybdis_config_t g_charybdis_config = {0};
-static charybdis_config_t g_charybdis_config_left = {0};
-static charybdis_config_t g_charybdis_config_right = {0};
-
 
 /**
  * \brief Set the value of `config` from EEPROM.
@@ -102,31 +99,27 @@ static uint16_t get_pointer_sniping_dpi(charybdis_config_t* config) {
     return (uint16_t)config->pointer_sniping_dpi * CHARYBDIS_SNIPING_DPI_CONFIG_STEP + CHARYBDIS_MINIMUM_SNIPING_DPI;
 }
 
-/** \brief Set the appropriate DPI for the input config and specify the side. */
-static void maybe_update_pointing_device_cpi(charybdis_config_t* config, bool is_left) {
+/** \brief Set the appropriate DPI for the input config. */
+static void maybe_update_pointing_device_cpi(charybdis_config_t* config) {
     if (config->is_dragscroll_enabled) {
-        pointing_device_set_cpi_on_side(is_left, CHARYBDIS_DRAGSCROLL_DPI);
+        pointing_device_set_cpi(CHARYBDIS_DRAGSCROLL_DPI);
     } else if (config->is_sniping_enabled) {
-        pointing_device_set_cpi_on_side(is_left, get_pointer_sniping_dpi(config));
+        pointing_device_set_cpi(get_pointer_sniping_dpi(config));
     } else {
-        pointing_device_set_cpi_on_side(is_left, get_pointer_default_dpi(config));
+        pointing_device_set_cpi(get_pointer_default_dpi(config));
     }
 }
 
 /**
- * \brief Update the pointer's default DPI to the next or previous step for a specified side.
+ * \brief Update the pointer's default DPI to the next or previous step.
  *
- * @param config Configuration for the trackball.
- * @param forward If `true`, increase DPI; if `false`, decrease DPI.
- * @param is_left If `true`, update the left side; if `false`, update the right side.
+ * Increases the DPI value if `forward` is `true`, decreases it otherwise.
+ * The increment/decrement steps are equal to CHARYBDIS_DEFAULT_DPI_CONFIG_STEP.
  */
-static void step_pointer_default_dpi(charybdis_config_t* config, bool forward, bool is_left) {
+static void step_pointer_default_dpi(charybdis_config_t* config, bool forward) {
     config->pointer_default_dpi += forward ? 1 : -1;
-
-    // Pass the side information to the CPI update function.
-    maybe_update_pointing_device_cpi(config, is_left);
+    maybe_update_pointing_device_cpi(config);
 }
-
 
 /**
  * \brief Update the pointer's sniper-mode DPI to the next or previous step.
@@ -136,7 +129,7 @@ static void step_pointer_default_dpi(charybdis_config_t* config, bool forward, b
  */
 static void step_pointer_sniping_dpi(charybdis_config_t* config, bool forward) {
     config->pointer_sniping_dpi += forward ? 1 : -1;
-    maybe_update_pointing_device_cpi(config, true);
+    maybe_update_pointing_device_cpi(config);
 }
 
 uint16_t charybdis_get_pointer_default_dpi(void) {
@@ -147,22 +140,14 @@ uint16_t charybdis_get_pointer_sniping_dpi(void) {
     return get_pointer_sniping_dpi(&g_charybdis_config);
 }
 
-// void charybdis_cycle_pointer_default_dpi_noeeprom(bool forward) {
-//     step_pointer_default_dpi(&g_charybdis_config, forward);
-// }
-
-void charybdis_cycle_pointer_default_dpi(bool forward, bool is_left) {
-    // Select the correct configuration based on 'is_left'
-    charybdis_config_t* config = is_left ? &g_charybdis_config_left : &g_charybdis_config_right;
-
-    // Pass the correct configuration and the 'is_left' flag
-    step_pointer_default_dpi(config, forward, is_left);
-
-    // Write the updated configuration to EEPROM
-    write_charybdis_config_to_eeprom(config);
+void charybdis_cycle_pointer_default_dpi_noeeprom(bool forward) {
+    step_pointer_default_dpi(&g_charybdis_config, forward);
 }
 
-
+void charybdis_cycle_pointer_default_dpi(bool forward) {
+    step_pointer_default_dpi(&g_charybdis_config, forward);
+    write_charybdis_config_to_eeprom(&g_charybdis_config);
+}
 
 void charybdis_cycle_pointer_sniping_dpi_noeeprom(bool forward) {
     step_pointer_sniping_dpi(&g_charybdis_config, forward);
@@ -179,7 +164,7 @@ bool charybdis_get_pointer_sniping_enabled(void) {
 
 void charybdis_set_pointer_sniping_enabled(bool enable) {
     g_charybdis_config.is_sniping_enabled = enable;
-    maybe_update_pointing_device_cpi(&g_charybdis_config, true);
+    maybe_update_pointing_device_cpi(&g_charybdis_config);
 }
 
 bool charybdis_get_pointer_dragscroll_enabled(void) {
@@ -188,7 +173,7 @@ bool charybdis_get_pointer_dragscroll_enabled(void) {
 
 void charybdis_set_pointer_dragscroll_enabled(bool enable) {
     g_charybdis_config.is_dragscroll_enabled = enable;
-    maybe_update_pointing_device_cpi(&g_charybdis_config, true);
+    maybe_update_pointing_device_cpi(&g_charybdis_config);
 }
 
 /**
@@ -273,27 +258,19 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
         debug_charybdis_config_to_console(&g_charybdis_config);
         return false;
     }
-#ifdef POINTING_DEVICE_ENABLE
-#ifndef NO_CHARYBDIS_KEYCODES
+#    ifdef POINTING_DEVICE_ENABLE
+#        ifndef NO_CHARYBDIS_KEYCODES
     switch (keycode) {
-        case LEFT_POINTER_DEFAULT_DPI_FORWARD:
+        case POINTER_DEFAULT_DPI_FORWARD:
             if (record->event.pressed) {
-                charybdis_cycle_pointer_default_dpi(!has_shift_mod(), true);
+                // Step backward if shifted, forward otherwise.
+                charybdis_cycle_pointer_default_dpi(/* forward= */ !has_shift_mod());
             }
             break;
-        case RIGHT_POINTER_DEFAULT_DPI_FORWARD:
+        case POINTER_DEFAULT_DPI_REVERSE:
             if (record->event.pressed) {
-                charybdis_cycle_pointer_default_dpi(!has_shift_mod(), false);
-            }
-            break;
-        case LEFT_POINTER_DEFAULT_DPI_REVERSE:
-            if (record->event.pressed) {
-                charybdis_cycle_pointer_default_dpi(has_shift_mod(), true);
-            }
-            break;
-        case RIGHT_POINTER_DEFAULT_DPI_REVERSE:
-            if (record->event.pressed) {
-                charybdis_cycle_pointer_default_dpi(has_shift_mod(), false);
+                // Step forward if shifted, backward otherwise.
+                charybdis_cycle_pointer_default_dpi(/* forward= */ has_shift_mod());
             }
             break;
         case POINTER_SNIPING_DPI_FORWARD:
@@ -333,12 +310,10 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
     return true;
 }
 
-
 void eeconfig_init_kb(void) {
     g_charybdis_config.raw = 0;
     write_charybdis_config_to_eeprom(&g_charybdis_config);
-    maybe_update_pointing_device_cpi(&g_charybdis_config_left, true);
-    maybe_update_pointing_device_cpi(&g_charybdis_config_right, false);
+    maybe_update_pointing_device_cpi(&g_charybdis_config);
     eeconfig_init_user();
 }
 
@@ -356,8 +331,7 @@ void charybdis_config_sync_handler(uint8_t initiator2target_buffer_size, const v
 #    endif
 
 void keyboard_post_init_kb(void) {
-    maybe_update_pointing_device_cpi(&g_charybdis_config_left, true);
-    maybe_update_pointing_device_cpi(&g_charybdis_config_right, false);
+    maybe_update_pointing_device_cpi(&g_charybdis_config);
 #    ifdef CHARYBDIS_CONFIG_SYNC
     transaction_register_rpc(RPC_ID_KB_CONFIG_SYNC, charybdis_config_sync_handler);
 #    endif
