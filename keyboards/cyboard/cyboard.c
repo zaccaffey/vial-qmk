@@ -214,10 +214,10 @@ void charybdis_set_pointer_dragscroll_enabled(bool enable, bool is_left) {
  *
  * Implement drag-scroll.
  */
-static void pointing_device_task_charybdis(report_mouse_t* mouse_report) {
+static void pointing_device_task_charybdis(report_mouse_t* mouse_report, bool is_left) {
     static int16_t scroll_buffer_x = 0;
     static int16_t scroll_buffer_y = 0;
-    if (g_charybdis_config.is_dragscroll_enabled) {
+    if (charybdis_get_pointer_dragscroll_enabled(is_left)) {
 #    ifdef CHARYBDIS_DRAGSCROLL_REVERSE_X
         scroll_buffer_x -= mouse_report->x;
 #    else
@@ -241,12 +241,10 @@ static void pointing_device_task_charybdis(report_mouse_t* mouse_report) {
     }
 }
 
-report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
-    if (is_keyboard_master()) {
-        pointing_device_task_charybdis(&mouse_report);
-        mouse_report = pointing_device_task_user(mouse_report);
-    }
-    return mouse_report;
+report_mouse_t pointing_device_task_combined_kb(report_mouse_t left_report, report_mouse_t right_report) {
+        pointing_device_task_charybdis(&left_report, true);
+        pointing_device_task_charybdis(&right_report, false);
+    return pointing_device_combine_reports(left_report, right_report);
 }
 
 #    if defined(POINTING_DEVICE_ENABLE) && !defined(NO_CHARYBDIS_KEYCODES)
