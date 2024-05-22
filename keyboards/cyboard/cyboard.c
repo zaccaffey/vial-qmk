@@ -399,11 +399,23 @@ void charybdis_config_sync_handler(uint8_t initiator2target_buffer_size, const v
 }
 #    endif
 
+#ifdef CHARYBDIS_CONFIG_DUAL_SYNC
+void charybdis_config_dual_sync_handler(uint8_t initiator2target_buffer_size, const void* initiator2target_buffer, uint8_t target2initiator_buffer_size, void* target2initiator_buffer) {
+    if (initiator2target_buffer_size == sizeof(g_charybdis_config_left.raw) + sizeof(g_charybdis_config_right.raw)) {
+        // Copy left configuration
+        memcpy(&g_charybdis_config_left, initiator2target_buffer, sizeof(g_charybdis_config_left));
+        // Copy right configuration
+        memcpy(&g_charybdis_config_right, (const uint8_t*)initiator2target_buffer + sizeof(g_charybdis_config_left), sizeof(g_charybdis_config_right));
+    }
+}
+#endif
+
+
 void keyboard_post_init_kb(void) {
     maybe_update_pointing_device_cpi(&g_charybdis_config_left, true);
     maybe_update_pointing_device_cpi(&g_charybdis_config_right, false);
-#    ifdef CHARYBDIS_CONFIG_SYNC
-    transaction_register_rpc(RPC_ID_KB_CONFIG_SYNC, charybdis_config_sync_handler);
+#    ifdef CHARYBDIS_CONFIG_DUAL_SYNC
+    transaction_register_rpc(RPC_ID_KB_CONFIG_DUAL_SYNC, charybdis_config_dual_sync_handler);
 #    endif
     keyboard_post_init_user();
 }
@@ -437,4 +449,46 @@ void housekeeping_task_kb(void) {
     // already.
 }
 #    endif // CHARYBDIS_CONFIG_SYNC
+
+#ifdef CHARYBDIS_CONFIG_DUAL_SYNC
+void housekeeping_task_kb(void) {
+    if (is_keyboard_master()) {
+        // Keep track of the last state, so that we can tell if we need to propagate to slave.
+        static charybdis_config_t last_charybdis_config_left = {0};
+        static charybdis_config_t last_charybdis_config_right = {0};
+        static uint32_t last_sync = 0;
+        bool needs_sync = false;
+
+        // Check if the left state values are different.
+        if (memcmp(&g_charybdis_config_left, &last_charybdis_config_left, sizeof(g_charybdis_config_left))) {
+            needs_sync = true;
+            memcpy(&last_charybdis_config_left, &g_charybdis_config_left, sizeof(g_charybdis_config_left));
+        }
+
+        // Check if the right state values are different.
+        if (memcmp(&g_charybdis_config_right, &last_charybdis_config_right, sizeof(g_charybdis_config_right))) {
+            needs_sync = true;
+            memcpy(&last_charybdis_config_right, &g_charybdis_config_right, sizeof(g_charybdis_config_right));
+        }
+
+        // Send to slave every 500ms regardless of state change.
+        if (timer_elapsed32(last_sync) > 500) {
+            needs_sync = true;
+        }
+
+        // Perform the sync if requested.
+        if (needs_sync) {
+            uint8_t sync_buffer[sizeof(g_charybdis_config_left) + sizeof(g_charybdis_config_right)];
+            memcpy(sync_buffer, &g_charybdis_config_left, sizeof(g_charybdis_config_left));
+            memcpy(sync_buffer + sizeof(g_charybdis_config_left), &g_charybdis_config_right, sizeof(g_charybdis_config_right));
+            if (transaction_rpc_send(RPC_ID_KB_CONFIG_DUAL_SYNC, sizeof(sync_buffer), sync_buffer)) {
+                last_sync = timer_read32();
+            }
+        }
+    }
+    // No need to invoke the user-specific callback, as it's been called already.
+}
+#endif // CHARYBDIS_CONFIG_DUAL_SYNC
+
+
 #endif     // POINTING_DEVICE_ENABLE
