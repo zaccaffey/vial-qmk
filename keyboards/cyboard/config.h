@@ -36,6 +36,7 @@
 #define VIAL_UNLOCK_COMBO_COLS { 3, 4 }
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 10
+#define DYNAMIC_KEYMAP_MACRO_COUNT 64
 
 //trackball support
 #define SPI_DRIVER SPID0
