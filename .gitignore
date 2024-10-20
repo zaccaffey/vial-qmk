@@ -113,3 +113,10 @@ user_song_list.h
 compile_commands.json
 .clangd/
 .cache/
+drivers/haptic/drv2605l.c
+drivers/haptic/drv2605l.h
+keyboards/converter/numeric_keypad_iie/info.json
+keyboards/converter/numeric_keypad_iie/rules.mk
+keyboards/emptystring/nqg/info.json
+keyboards/emptystring/nqg/rules.mk
+keyboards/emptystring/nqg/keymaps/default/keymap.c
